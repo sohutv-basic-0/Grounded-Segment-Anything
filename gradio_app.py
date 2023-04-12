@@ -36,13 +36,13 @@ from huggingface_hub import hf_hub_download
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
 
-def load_model_hf(model_config_path, repo_id, filename, device='cpu'):
+def load_model_hf(model_config_path, repo_id, filename, device='cuda'):
     args = SLConfig.fromfile(model_config_path) 
     model = build_model(args)
     args.device = device
 
     cache_file = hf_hub_download(repo_id=repo_id, filename=filename)
-    checkpoint = torch.load(cache_file, map_location='cpu')
+    checkpoint = torch.load(cache_file, map_location='cuda')
     log = model.load_state_dict(clean_state_dict(checkpoint['model']), strict=False)
     print("Model loaded from {} \n => {}".format(cache_file, log))
     _ = model.eval()
